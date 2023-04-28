@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
-import {useHistory} from 'react-router-dom'
-import Header from './Home/Header'
+import {useHistory, Link} from 'react-router-dom'
+
 import { listDecks, createDeck  } from "./utils/api";
 
 export default function Create(){
@@ -16,8 +16,7 @@ export default function Create(){
     useEffect(()=>{
         listDecks().then(data => setFormData(data))
     },[])
-   
-    // console.log('formData', formData)
+
 
     const handleChange = ({ target }) => {
         setNewData({
@@ -27,13 +26,14 @@ export default function Create(){
      };
     const handleSubmit = (event) => {
         event.preventDefault();
-        console.log('newData', newData)
+       
         createDeck(newData).then((savedDeck)=>history.push(`/decks/${savedDeck.id}/view`));
       };
 
 return (
-    <>
-        <Header />
+    <div>
+     
+        <Link className='btn' to='/'>Home</Link>
         <div className="container">
             <form>
                 <div>
@@ -61,6 +61,6 @@ return (
             <button className="btn" onClick={handleSubmit}>Submit</button>
         </div>
         
-    </>
+    </div>
 )
 }

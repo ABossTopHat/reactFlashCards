@@ -1,17 +1,17 @@
 import React, {useState, useEffect} from "react";
-import {Link, useParams} from "react-router-dom";
-import Header from './Home/Header'
+import {Link, useParams, useHistory} from "react-router-dom";
+
 import { readDeck } from "./utils/api";
 
 //
 export default function Study(){
   const {deckId} = useParams()
-  const [decks, setDecks] = useState({name:"Loading", cards:[{front:"", back:''}]});
+  const [deck, setDeck] = useState({name:"Loading", cards:[{front:"", back:''}]});
   const[show, setShow] = useState(true)
   const [card, setCard] = useState(0)
-  console.log('cards', decks.cards)
-useEffect( () => {
-  readDeck(deckId).then(setDecks);
+  const history = useHistory()
+  useEffect( () => {
+  readDeck(deckId).then(setDeck);
 }, [deckId])
 
 function Flip(e){
@@ -23,46 +23,59 @@ function Flip(e){
   }
 }
 function Next(e){
-  if(card < decks.cards.length - 1){
+  if(card < deck.cards.length - 1){
     setCard(card + 1)
+    setShow(true)
   }
-  if(card === decks.cards.length -1){
+  if(card === deck.cards.length -1){
+    if(window.confirm('Restart?')){
     setCard(0)
+    setShow(true)
+  }
+    else{
+      history.push('/')
+    }
   }
 }
-/*Everything before this point is setup for what is actually returned */
-if(show === true){
-return(  
-<>
-<Header />
-<div className="container">
-  <Link className='btn' to='/'>Home</Link>
-</div>
-<div>
-  {decks.cards[card].front}
-</div>
-<div className="container">
-<button className="btn" onClick={Flip}>Flip</button>
-<button className="btn" onClick={Next}>Next</button>
-</div>
-
-</>)}
-if(show === false){
+function Front(){
   return(  
-    <>
-    <Header />
-    <div className="container" key=''>
+    <div>
+   
+    <div className="container">
+      <Link className='btn' to='/'>Home</Link>
+    </div>
+    <div>
+      {deck.cards[card].front}
+    </div>
+    <div className="container">
+    <button className="btn" onClick={Flip}>Flip</button>
+    </div>
+    
+    </div>)
+}
+function Back(){
+  return(  
+    <div>
+  
+    <div className="container" >
       <Link className='btn' to='/'>Home</Link>
     </div>
     <div key=''>
-      {decks.cards[card].back}
+      {deck.cards[card].back}
     </div>
-    <div className="container" key=''>
+    <div className="container" >
       <button className="btn" onClick={Flip}>Flip</button>
-      <button className="btn" onClick={Flip}>Next</button>
+      <button className="btn" onClick={Next}>Next</button>
     </div>
-    </>)
-  
+    </div>)
+}
+
+/*Everything before this point is setup for what is actually returned */
+if(show === true){
+  return Front()
+}
+if(show === false){
+  return Back()
 }
   
 }
